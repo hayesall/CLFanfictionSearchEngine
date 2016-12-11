@@ -75,8 +75,8 @@ def bfs(start):
         # try something like this (I did this on a RHEL 7 workstation, your mileage may vary):
         # > import numpy as np
         # > import matplotlib.pyplot as plt
-        # > s = np.random.poisson(3, 100000)
-        # > count, bins, ignored = plt.hist(s, 14, normed=True)
+        # > s = np.random.poisson(2, 100000)
+        # > count, bins, ignored = plt.hist(s, 10, normed=True)
         # > plt.show()
 
         # https://en.wikipedia.org/wiki/Poisson_distribution

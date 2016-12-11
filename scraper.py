@@ -15,7 +15,7 @@ class Scraper:
 
     def __init__(self):
         self.base_url = 'http://fanfiction.net/'
-        self.rate_limit = 2
+        self.rate_limit = 1
         self.parser = "html.parser"
 
     def get_genres(self, genre_text):
@@ -132,19 +132,20 @@ class Scraper:
 
             # I'm not quite satisfied with one second being the rate limit, so I'm introducing
             # noise based on a poisson distribution
-            #wait_time = (np.random.poisson(1,1))[0]
-            time.sleep(self.rate_limit)
+            wait_time = (np.random.poisson(2,1))[0]
+            time.sleep(wait_time)
             #time.sleep(self.rate_limit)
 
             chapter = self.scrape_chapter(story_id, chapter_id)
-            #wait_time = (np.random.poisson(1,1))[0]
-            time.sleep(self.rate_limit)
+            wait_time = (np.random.poisson(2,1))[0]
+            time.sleep(wait_time)
             
             time.sleep(self.rate_limit)
             chapter_reviews = self.scrape_reviews_for_chapter(
                 story_id, chapter_id)
             metadata['chapters'][chapter_id] = chapter
             metadata['reviews'][chapter_id] = chapter_reviews
+        print '\n'
         return metadata
 
     def scrape_chapter(self, story_id, chapter_id, keep_html=False):
