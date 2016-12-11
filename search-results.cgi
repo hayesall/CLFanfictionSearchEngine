@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import sys, os, math
 import cgi
 import operator
 from nltk.corpus import stopwords
@@ -14,31 +15,191 @@ stemmer = PorterStemmer()
 user_words = []
 #user_genre = []
 
-print('Content-type: text/html\n')
-print('<title>Search Results</title>')
-print('<h1>Results:</h1>')
-#words and genre are the two names
+print 'Content-type: text/html\n'
+print '<!DOCTYPE html>'
+print '<html lang="en">'
+print '<head>'
+print '<meta charset="utf-8">'
+print '<meta http-equiv="X-UA-Compatible" content="IE=edge">'
+print '<meta name="viewport" content="width=device-width, initial-scale=1">'
+print '<meta name="theme-color" content="#7A1705">'
+print '<meta name="description" content="results for the terms you just queried">'
+print '<meta name="author" content="Alexander Hayes">'
+print '<title>Search Results</title>'
+print '<link href="../STARAI/css/bootstrap.min.css" rel="stylesheet">'
+print '<link href="../STARAI/css/ie10-viewport-bug-workaround.css" rel="stylesheet">'
+print '<link href="../STARAI/css/sticky-footer-navbar.css" rel="stylesheet">'
+print '<link href="../STARAI/css/starai.css" rel="stylesheet">'
+print '<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->'
+print '<!--[if lt IE 9]>'
+print '<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>'
+print '<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>'
+print '<![endif]-->'
+print '<style>'
+print 'a:link {'
+print 'color: blue;'
+print '}'
+print 'a:visited {'
+print 'color: red;'
+print '}'
+print 'body {'
+#print 'background-color:#4682B4;'
+print 'background-color:#EEEDEB;'
+print '}'
+print 'cleaned {'
+print 'color:#000000;'
+print 'font-size: 1.3em;'
+print '}'
+print 'centered {'
+print 'margin: auto;'
+print 'width: 50%;'
+print 'padding: 15px;'
+print '}'
+print '</style>'
+print '</head>'
+print '<body>'
+print '<nav class="navbar navbar-default navbar-fixed-top" style="background-color:#333399;">'
+print '<div class="container">'
+print '<div class="navbar-header" style="padding: 0.5em 10px; vertical-align: middle; width: 1300px; color: #EEEDEB; font-size: 1.4em;">'
+print 'FanFiction | unleash your imagination'
+print '</div></div></nav>'
+print '<div class="container">'
+print '<div class="container">'
+print '<h1 style="color:#000000;">Results:</h1>'
+
+# Here is where the bulk of the work actually happens:
+
 if not 'words1' in form:
-    print('<p>words not specified</p>')
+    print('<p class="lead cleaned" style="color:#000000;">No results.</p>')
 else:
-    print('<p>You selected: %s</p>' % cgi.escape(form['words1'].value))
+    print('<p class="lead cleaned" style="color:#000000;">Query: %s</p>' % cgi.escape(form['words1'].value))
     user_words = (cgi.escape(form['words1'].value)).split()
+
 #if not 'genre2' in form:
 #    print('<p>genre not specified</p>')
 #else:
 #    print('<p>You selected: %s</p>' % cgi.escape(form['genre2'].value))
 #    user_genre = (cgi.escape(form['genre2'].value)).split()
 
+print '<hr style="background-color: #000000; border-color: #000000; color: #000000;"><br>'
+
 if len(user_words) > 0:
     filtered_words = [word for word in user_words if word.lower() not in stopwords.words('english')]
     stemmed_words = [stemmer.stem(word) for word in filtered_words]
-    print('<br><hr><br><p>Stemmed/Stopped words:</p>')
-    print('<p>')
-    for word in stemmed_words:
-        print('%s' % word)
-    print('</p>')
+#    print('<p class="lead cleaned" style="color: #000000;">Stemmed/Stopped words:</p>')
+#    print('<p class="lead cleaned" style="color:#000000;">')
+#    for word in stemmed_words:
+#        print('%s' % word)
+#    print('</p>')
+    list_of_word_strings = [str(word) for word in stemmed_words]
 
-#print ('<br><br><br><br><br><br><br>Questions? Contact Alexander L. Hayes: hayesall(at)indiana(dot)edu<br>')
-#print ('<a href="https://github.iu.edu/hayesall/">GitHub</a>')
+
+inverted_index_dict = {}
+with open('invindex.dat') as inverted_index:
+    inverted_index_list = inverted_index.readlines()
+
+for line in inverted_index_list:
+    content = line.split()
+    word = str(content[0])
+    documents_as_string = ""
+    for item in content[2:]:
+        documents_as_string = documents_as_string + str(item) + ' '
+    inverted_index_dict[word] = documents_as_string
+
+#testing
+#print '<p class="lead cleaned" style="color:#000000;">%s</p>' % len(inverted_index_dict)
+
+document_data_dict = {}
+with open('docs.dat') as doc_data:
+    document_data_list = doc_data.readlines()
+
+for line in document_data_list:
+    content = line.split()
+    key = str(content[0])
+    document_info = ""
+    for item in content[1:]:
+        document_info = document_info + str(item) + ' '
+    document_data_dict[key] = document_info
+
+documents_explored = 0
+
+most_dict = {}
+frequency_dict = {}
+for html_doc in document_data_dict.keys():
+    for word in list_of_word_strings:
+        if inverted_index_dict.has_key(word):
+            #text_list: all of the documents that match a certain word
+            text_list = inverted_index_dict[word].split()
+            term_frequency = 0
+            #total number of times a word occurs in all of the documents
+            for item in text_list:
+                head, sep, tail = item.partition(':')
+                term_frequency += int(tail)
+#            print text_list
+#            print term_frequency
+            for item in text_list:
+                documents_explored += 1
+                #head is the docID (42.html), sep is the separator (':'), tail is the term frequency (3)
+                head, sep, tail = item.partition(':')
+                tail = float(tail)
+                if head == html_doc:
+                    if most_dict.has_key(head):
+                        most_dict[head] += 1
+                    else:
+                        most_dict[head] = 1
+                    if frequency_dict.has_key(head):
+                        frequency_dict[head] += (tail/term_frequency)
+                    else:
+                        frequency_dict[head] = (tail/term_frequency)
+
+# "selecting elements of python dictionary greater than a certain value"
+stripped_most_dict = dict((k, v) for k, v in most_dict.items() if v >= int(math.ceil(len(list_of_word_strings)/2)))
+sorted_frequency_dict = sorted(frequency_dict.items(), key=operator.itemgetter(1))
+sorted_frequency_dict.reverse()
+#print sorted_frequency_dict
+
+fixed_list = []
+current = 0
+maximum = 10
+for item in sorted_frequency_dict:
+    if item[0] in stripped_most_dict:
+        if current >= maximum:
+            break
+        else:
+            fixed_list.append(item[0])
+            current += 1
+
+total_found = 0
+#print "\033[1;32m\n\nSuper-Google Results:\033[0m"
+#print '<p class="lead cleaned" style="color:#000000;">%s</p>' % str(len(fixed_list))
+if len(fixed_list) == 0:
+    print '<p class="lead cleaned" style="color:#000000;">No results.</p>'
+else:
+    for item in fixed_list:
+        final_list = document_data_dict[item].split()
+        url_to_print = final_list[2]
+        title_to_print = final_list[1]
+        frequency_to_print = "{0:.3f}".format(float(frequency_dict[item]))
+        #print '  ' + str(frequency_to_print) + ') ' + url_to_print + '  -----  ' + title_to_print.replace('_',' ')
+        print '<p class="lead cleaned" style="color:#000000;"><a href="%s">%s</a></p>' % (str(url_to_print), str(title_to_print.replace('_',' ')))
+        total_found += 1
+
+
+#print '<p class="lead cleaned" style="color:#000000;">%s</p>' % len(inverted_index_dict)
+#print "Explored " + str(documents_explored) + " documents and found " + str(total_found) + " results."
+
+print '<br><br><br>'
+print '</div></div>'
+print '<footer class="footer" style="background-color:#333399;">'
+print '<div class="container">'
+print '<p class="text-muted" style="color:#EEEDEB; font-size:16px;">Questions? Contact Alexander L. Hayes: hayesall(at)indiana(dot)edu | <a href="https://github.iu.edu/hayesall/">GitHub</a></p>'
+print '</div>'
+print '</footer>'
+print '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
+#<script>window.jQuery || document.write('<script src="../STARAI/js/vendor/jquery.min.js"><\/script>')</script>
+print '<script src="../STARAI/js/bootstrap.min.js"></script>'
+print '<script src="../STARAI/js/ie10-viewport-bug-workaround.js"></script>'
+print '</body>'
+print '</html>'
 
 exit()
