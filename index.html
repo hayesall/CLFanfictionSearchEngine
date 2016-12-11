@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="theme-color" content="#7A1705">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <title>Fanfiction Search</title>
+    <link href="../STARAI/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../STARAI/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="../STARAI/css/sticky-footer-navbar.css" rel="stylesheet">
+    <link href="../STARAI/css/starai.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <style>
+      body {
+      background-color:#4682B4;
+      }
+      cleaned {
+      color:#EEEDEB;
+      font-size: 1.3em;
+      }
+      centered {
+      margin: auto;
+      width: 50%;
+      padding: 15px;
+      }
+    </style>
+  </head>
+  <body>
+    
+    <nav class="navbar navbar-default navbar-fixed-top" style="background-color:#333399;">
+      <div class="container">
+	<div class="navbar-header" style="padding: 0.5em 10px; vertical-align: middle; width: 1300px; color: #EEEDEB; font-size: 1.4em;">
+	  FanFiction | unleash your imagination
+	</div>
+      </div>
+    </nav>
+    
+    <div class="container">
+      <h1 style="text-align:center;">FanFiction Search Engine</h1>
+      <div class="container">
+	
+	<br><br>
+	<form method=POST action="search-results.cgi">
+	  <div class="form-group row">
+	    <label for="example-search-input" class="col-sm-4 col-form-label" style="text-align: right; font-size:1.4em; color:#EEEDEB;">Fictional Search</label>
+	    <div class="col-sm-4">
+	  <P><input type=text name=words1 class="form-control" id="example-search-input">
+	    </div>
+	  </div>
+	  <!-- Additional search parameters will be fun to implement at some point, I want to get the
+	       essentials finished though before I expand beyond.
+	  <div class="form-group row">
+	    <label for="example-genre-input" class="col-sm-4 col-form-label" style="text-align: right; font-size:1.4em; color:#EEEDEB;">Genre</label>
+
+	    <div class="col-sm-4">
+	      <P><input type=text name=genre2 class="form-control" id="example-genre-input">
+	    </div>
+	  </div>
+	    -->
+	  <center>
+	      <P><input type=submit class="betterbutton button hvr-grow" value="Proprietary Eponym for Search" style="background:#333399; padding: 10px 30px;">
+	  </center>
+	</form>
+	  
+	  <br><br><br>
+	<p class="lead cleaned" style="color: #EEEDEB; text-align: center;"><a href="http://cgi.soic.indiana.edu/~hayesall/">Alexander L. Hayes</a> | Search Informatics Final Project</p>
+	<blockquote style="color: #EEEDEB; font-style:italic;">Terms and Conditions:<br>E. You agree not to use or launch any automated systems, including without limitation, "robots," "spiders," or "offline readers," that accesses the Website in a manner that sends more request messages to the FanFiction.net servers in a given period of time than a human can reasonably produce in the same period by using a conventional on-line web browser.</blockquote>
+      </div>
+    </div>
+    
+    
+    <!-- footer -->
+    <footer class="footer" style="background-color:#333399;">
+      <div class="container">
+        <p class="text-muted" style="color:#EEEDEB; font-size:16px;">&copy; 2016 Alexander L. Hayes</p>
+      </div>
+    </footer>
+    
+    
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../STARAI/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../STARAI/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../STARAI/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>
