@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import sys, os, math
+import csv, pickle
 import cgi
 import operator
 from nltk.corpus import stopwords
@@ -81,10 +82,10 @@ else:
 #    print('<p>You selected: %s</p>' % cgi.escape(form['genre2'].value))
 #    user_genre = (cgi.escape(form['genre2'].value)).split()
 
-print '<hr style="background-color: #000000; border-color: #000000; color: #000000;"><br>'
+print '<hr style="background-color: #000000; border-color: #000000; color: #000000;">'
 
 if len(user_words) > 0:
-    filtered_words = [word for word in user_words if word.lower() not in stopwords.words('english')]
+    filtered_words = [word.lower() for word in user_words if word.lower() not in stopwords.words('english')]
     stemmed_words = [stemmer.stem(word) for word in filtered_words]
 #    print('<p class="lead cleaned" style="color: #000000;">Stemmed/Stopped words:</p>')
 #    print('<p class="lead cleaned" style="color:#000000;">')
@@ -94,32 +95,45 @@ if len(user_words) > 0:
     list_of_word_strings = [str(word) for word in stemmed_words]
 
 
-inverted_index_dict = {}
-with open('invindex.dat') as inverted_index:
-    inverted_index_list = inverted_index.readlines()
+#inverted_index_dict = {}
+#with open('invindex.dat') as inverted_index:
+#    inverted_index_list = inverted_index.readlines()
+with open('invindex.dat', 'r') as input_file:
+    reader = csv.reader(input_file, delimiter='|')
+    inverted_index_dict = dict((rows[0], rows[1:]) for rows in reader)
 
-for line in inverted_index_list:
-    content = line.split()
-    word = str(content[0])
-    documents_as_string = ""
-    for item in content[2:]:
-        documents_as_string = documents_as_string + str(item) + ' '
-    inverted_index_dict[word] = documents_as_string
+#metadata_dict --> document_data_dict for easy transition
+with open('metadata.csv', 'r') as input_file:
+    reader = csv.reader(input_file, delimiter='|')
+    document_data_dict = dict((rows[0], rows[1:]) for rows in reader)
+
+pagerank = pickle.load( open( 'pr.pickle', 'rb') )
+
+#for line in inverted_index_list:
+#    content = line.split()
+#    word = str(content[0])
+#    documents_as_string = ""
+#    for item in content[2:]:
+#        documents_as_string = documents_as_string + str(item) + ' '
+#    inverted_index_dict[word] = documents_as_string
 
 #testing
 #print '<p class="lead cleaned" style="color:#000000;">%s</p>' % len(inverted_index_dict)
 
-document_data_dict = {}
-with open('docs.dat') as doc_data:
-    document_data_list = doc_data.readlines()
+#metadata_dict replaces docs.dat, the number identifier is also the address on fanfiction.net/s/...
+#author is at fanfiction.net/u/...
 
-for line in document_data_list:
-    content = line.split()
-    key = str(content[0])
-    document_info = ""
-    for item in content[1:]:
-        document_info = document_info + str(item) + ' '
-    document_data_dict[key] = document_info
+#document_data_dict = {}
+#with open('docs.dat') as doc_data:
+#    document_data_list = doc_data.readlines()
+
+#for line in document_data_list:
+#    content = line.split()
+#    key = str(content[0])
+#    document_info = ""
+#    for item in content[1:]:
+#        document_info = document_info + str(item) + ' '
+#    document_data_dict[key] = document_info
 
 documents_explored = 0
 
@@ -129,7 +143,7 @@ for html_doc in document_data_dict.keys():
     for word in list_of_word_strings:
         if inverted_index_dict.has_key(word):
             #text_list: all of the documents that match a certain word
-            text_list = inverted_index_dict[word].split()
+            text_list = inverted_index_dict[word]#.split()
             term_frequency = 0
             #total number of times a word occurs in all of the documents
             for item in text_list:
@@ -151,6 +165,11 @@ for html_doc in document_data_dict.keys():
                         frequency_dict[head] += (tail/term_frequency)
                     else:
                         frequency_dict[head] = (tail/term_frequency)
+
+for item in frequency_dict:
+    #adding pagerank is the same as not including pagerank since they are so small (unless I inflated them a bit?)
+    #multiplying seems to have the largest effect on the outcome
+    frequency_dict[item] = frequency_dict[item] * pagerank[item]
 
 # "selecting elements of python dictionary greater than a certain value"
 stripped_most_dict = dict((k, v) for k, v in most_dict.items() if v >= int(math.ceil(len(list_of_word_strings)/2)))
@@ -176,6 +195,30 @@ if len(fixed_list) == 0:
     print '<p class="lead cleaned" style="color:#000000;">No results.</p>'
 else:
     for item in fixed_list:
+        final_list = document_data_dict[item]#.split()
+        url_to_print = 'https://www.fanfiction.net/s/' + str(item)
+        title_to_print = final_list[0]
+        author_href = '<a href="' + 'https://www.fanfiction.net/u/' + str(final_list[1]).replace('u','') + '">' + 'Author</a>'
+        link_href = '<h3><a href="' + url_to_print + '">' + title_to_print + '</a></h3>'
+        #frequency_to_print = "{0:.3f}".format(float(frequency_dict[item]))
+        #frequency_to_print = str(frequency_dict[item])
+        genre = final_list[2]
+        rating = final_list[3]
+        language = final_list[4]
+        num_words = str(final_list[5])
+        num_chapt = str(final_list[6])
+        status = final_list[7]
+        print link_href
+        print '   ' + author_href + \
+            ', Genre: ' + genre + \
+            ', Rated: ' + rating + \
+            ', Language: ' + language + \
+            ', Words: ' + num_words + \
+            ', Chapters: ' + num_chapt + \
+            ', Status: ' + status
+        total_found += 1
+    '''
+    for item in fixed_list:
         final_list = document_data_dict[item].split()
         url_to_print = final_list[2]
         title_to_print = final_list[1]
@@ -183,7 +226,7 @@ else:
         #print '  ' + str(frequency_to_print) + ') ' + url_to_print + '  -----  ' + title_to_print.replace('_',' ')
         print '<p class="lead cleaned" style="color:#000000;"><a href="%s">%s</a></p>' % (str(url_to_print), str(title_to_print.replace('_',' ')))
         total_found += 1
-
+    '''
 
 #print '<p class="lead cleaned" style="color:#000000;">%s</p>' % len(inverted_index_dict)
 #print "Explored " + str(documents_explored) + " documents and found " + str(total_found) + " results."
