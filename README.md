@@ -87,6 +87,7 @@ For the purpose of this example, I will not directly compare the results to thos
 ##### Algorithm:
 
   ![A subsection of how this graph may look](media/directed-fanfiction-graph.jpg "graph subsection")
+
   _Blue [S] nodes represent stories, Violet [U] nodes represent users. Directed arrows are the edges between the nodes._
 
 I consider two types of nodes: stories and users. Each are referenced with a unique identifier on the website that can easily be looked up by specifying "fanfiction.net/u/#" for users or "fanfiction.net/s/#" for stories.
@@ -97,7 +98,7 @@ Edges symbolize a type of contribution to the community:
 
 The resulting network (sample pictured above) symbolizes the contributions by community members in forms of writing or reviewing. If the goal is to match users with relevant results, the structure of the community--where other users gravitate to--is an interesting layer of complexity.
 
-The assumption is that the larger role a user plays in the associated community (through writing popular stories)
+The assumption is that the larger role a user plays in the associated community (through writing popular stories), the more likely their stories are to be relevant, and the more likely it is that stories they review will be relevant.
 
 [Return to Top](#i427---search-informatics---final-project)
 
@@ -143,9 +144,9 @@ Simply multiplying the scores caused extremely popular stories (ones that typica
 
 The method I used is a semi-supervised version of webcrawling where I scraped pages based on content I knew would be interesting ahead of time. This is somewhat similar to topic-sensitive hidden web crawling, users and stories are stored as text on a page, but finding them is typically done through looking at a domain-specific category and knowing what information on a page is relevant.
 
-1. The first step was to collect story-ids for the stories I wanted to scrape. It was simple to reverse-engineer how FanFiction.Net stored their stories, so I ran a quick bash script to search for 261 stories and collect reference links (in the form of a unique number identifier) for the 6520 stories. For quality evaluation I also dumped the web address into the "sids.txt" file, but these could be removed later with `grep -v "http"`.
+1. The first step was to collect story-ids. Reverse-engineering how FanFiction.Net stored their stories was fairly straightforward, so I ran a quick bash script to search for stories on the 261 pages I knew would contain the information I wanted. For each, I collected reference links in the form of a unique number identifier for the 6520 stories. For quality evaluation I also dumped the web address into the "sids.txt" file, but these could be removed later with `grep -v "http"`.
 
-   _"scrape_story_ids.sh"_ [View in Folder](scrape_story_ids.sh)
+   "scrape_story_ids.sh" [View in Folder](scrape_story_ids.sh)
    ```bash
    BASE="https://www.fanfiction.net/cartoon/Code-Lyoko/?&str=1&r=103&p="
    for i in {1..261}; do
@@ -160,15 +161,19 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
    * (As a side note, I updated my true [web crawler for following links](crawl.py), but wrote a separate one for this project)
    * The Scraper [View Code](scraper.py):
+
      I modified Smitha's original python code to have better error checking (the program would crash if there was only one chapter) and a higher rate-limit that used Poisson noise with a 2-second median.
    * Analysis/Reduction [View Code](scrape_fiction.py)
+
      Smitha's updated code was imported here as a package, then in one step this script downloaded the page; stored metadata, structure, and the inverted index; then proceeded to the next story. I set the original run to only scrape the first 3000 chapters, but this involved downloading each page and review page.
 
 3. Now that we had metadata.csv (similar to docs.dat), structure.csv (for calculating pagerank), and invindex.dat: it's time to put everything together.
 
    * PageRank [View Code](pagerank.py)
+
      Was calculated ahead of time with the contents of structure.csv, the contents were then written to a file called pr.pickle.
    * Querying [View Code](search-results.cgi)
+
      Search results were calculated based on 'most' ('and', 'or' can be added later), using the inverted index and pr.pickle to find the most relevant pages. Metadata for the results was shown to give the user some additional information before following a link. This was similar to [retrieve2.py](retrieve2.py), though the code was adapted but not specifically used.
 
 [Return to Top](#i427---search-informatics---final-project)
