@@ -146,7 +146,7 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
 1. The first step was to collect story-ids. Reverse-engineering how FanFiction.Net stored their stories was fairly straightforward, so I ran a quick bash script to search for stories on the 261 pages I knew would contain the information I wanted. For each, I collected reference links in the form of a unique number identifier for the 6520 stories. For quality evaluation I also dumped the web address into the "sids.txt" file, but these could be removed later with `grep -v "http"`.
 
-   "scrape_story_ids.sh" [View in Folder](scrape_story_ids.sh)
+   "scrape_story_ids.sh" [View Code](scrape_story_ids.sh)
    ```bash
    BASE="https://www.fanfiction.net/cartoon/Code-Lyoko/?&str=1&r=103&p="
    for i in {1..261}; do
@@ -170,6 +170,12 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 3. Now that we had metadata.csv (similar to docs.dat), structure.csv (for calculating pagerank), and invindex.dat: it's time to put everything together.
 
    * PageRank [View Code](pagerank.py)
+
+     `python pagerank.py structure.csv`
+       
+       * INPUT: a .csv ('|' as delimiter) file where the first element is a node, and subsequent elements are nodes with an edge in between.
+       * `structure.csv` is an output of scrape_fiction.py
+       * OUTPUT: creates a pickle file: `pr.pickle` of each node and its pagerank score.
 
      Was calculated ahead of time with the contents of structure.csv, the contents were then written to a file called pr.pickle.
    * Querying [View Code](search-results.cgi)
