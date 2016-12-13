@@ -1,16 +1,18 @@
 ### i427 - Search Informatics - Final Project
 
-Alexander L. Hayes - [FanFiction Search Engine](cgi.soic.indiana.edu/~hayesall/engine/index.html)
+Alexander L. Hayes - [FanFiction Search Engine](http://cgi.soic.indiana.edu/~hayesall/engine/index.html)
 
 ---
 
 ##### Table of Contents:
 
   1. [Overview](#overview)
-  2. [Conditions](#conditions)
+  2. [Terms and Conditions](#terms-and-conditions)
   3. [Background](#background)
-  4. [Reviews](#reviews)
-  5. [Further Work](#further-work)
+  4. [Algorithm Design](#algorithm-design)
+  5. [Reviews](#reviews)
+  6. [Further Work](#further-work)
+  7. [Appendix / Code)](#appendix)
 
 ---
 
@@ -28,7 +30,7 @@ Maciej Cegłowski gave a great talk called ["Deep Fried Data"](http://idlewords.
 
 ---
 
-##### Conditions:
+##### Terms and Conditions:
 
 Refer to FanFiction.Net's ["Terms of Service"](https://www.fanfiction.net/tos/) for full details.
 
@@ -76,7 +78,7 @@ There exist several implementations for searching the content. I will provide a 
 
 Imagine for a moment that you want all of Code Lyoko stories containing a reference to "Twitter." With the crawler rate I set, I was able to explore 328 stories (this doesn't sound very large, but required around 6000 requests to explore each chapter and review section). The crawler scraped backward through time: starting from the present and ending on October 2, 2015.
 
-From these 328 documents published over the course of a year, seven results contain references to Twitter, while the [top result](https://www.fanfiction.net/s/12035101) has an underlying cyber-bullying theme. If you use the built-in search tool on FanFiction.Net, the [only result that comes up](https://www.fanfiction.net/s/8429561/1/Tweethearts).
+From these 328 documents published over the course of a year, seven results contain references to Twitter, while the [top result](https://www.fanfiction.net/s/12035101) has an underlying cyber-bullying theme. If you use the built-in search tool on FanFiction.Net, the [only result that comes up](https://www.fanfiction.net/s/8429561/1/Tweethearts) appears because the word "twitter" is in the title.
 
 For the purpose of this example, I will not directly compare the results to those that would be obtained from Dark Lord Potter's search engine (it's a skewed comparison since it does not include Code Lyoko fanfiction).
 
@@ -84,7 +86,7 @@ For the purpose of this example, I will not directly compare the results to thos
 
 ---
 
-##### Algorithm:
+##### Algorithm Design:
 
   ![A subsection of how this graph may look](media/directed-fanfiction-graph.jpg "graph subsection")
 
@@ -140,7 +142,7 @@ Simply multiplying the scores caused extremely popular stories (ones that typica
 
 ---
 
-##### Code:
+##### Appendix:
 
 The method I used is a semi-supervised version of webcrawling where I scraped pages based on content I knew would be interesting ahead of time. This is somewhat similar to topic-sensitive hidden web crawling, users and stories are stored as text on a page, but finding them is typically done through looking at a domain-specific category and knowing what information on a page is relevant.
 
@@ -162,12 +164,28 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
    * (As a side note, I updated my true [web crawler for following links](crawl.py), but wrote a separate one for this project)
    * The Scraper [View Code](scraper.py):
 
-     I modified Smitha's original python code to have better error checking (the program would crash if there was only one chapter) and a higher rate-limit that used Poisson noise with a 2-second median.
+     ```python
+     > python
+     > import Scraper
+     > scraper = Scraper()
+     > metadata = scraper.scrape_story_metadata(STORY_ID)
+     ```
+     
+     * For full documentation, refer to the GitHub page linked above.
+
+     * I modified Smitha's original python code to have better error checking (the program would crash if there was only one chapter) and a higher rate-limit that used Poisson noise with a 2-second median.
+
    * Analysis/Reduction [View Code](scrape_fiction.py)
 
-     Smitha's updated code was imported here as a package, then in one step this script downloaded the page; stored metadata, structure, and the inverted index; then proceeded to the next story. I set the original run to only scrape the first 3000 chapters, but this involved downloading each page and review page.
+     * Smitha's updated code was imported here as a package, then in one step this script downloaded the page; stored metadata, structure, and the inverted index; then proceeded to the next story. I set the original run to only scrape the first 3000 chapters, but this involved downloading each page and review page.
+     
+     * `python scrape_fiction.py`
 
-3. Now that we had metadata.csv (similar to docs.dat), structure.csv (for calculating pagerank), and invindex.dat: it's time to put everything together.
+       * INPUT: none on the commandline: the script imports a file called "sids.txt" (which is simply a list of story-IDs)
+       
+       * OUTPUT: creates three files: metadata.csv (similar to docs.dat), structure.csv (for calculating PageRank), and invindex.dat.
+
+3. Now that we have the  metadata, structure, and the inverted index: it's time to put everything together.
 
    * PageRank [View Code](pagerank.py)
 
@@ -186,7 +204,7 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
      Search results were calculated based on 'most' ('and', 'or' can be added later), using the inverted index and pr.pickle to find the most relevant pages. Metadata for the results was shown to give the user some additional information before following a link. This was similar to [retrieve2.py](retrieve2.py), though the code was adapted but not specifically used.
 
-     You can demo [search-results.cgi on the website](cgi.soic.indiana.edu/~hayesall/engine/index.html). The script calculates the top 150 results: splitting them into 15-per-page chunks that can be navigated through using Ajax/Javascript calls that are bound to next/prev buttons.
+     You can demo [search-results.cgi on the website](http://cgi.soic.indiana.edu/~hayesall/engine/index.html). The script calculates the top 150 results: splitting them into 15-per-page chunks that can be navigated through using Ajax/Javascript calls that are bound to next/prev buttons.
 
 [Return to Top](#i427---search-informatics---final-project)
 
