@@ -23,7 +23,7 @@ print '<head>'
 print '<meta charset="utf-8">'
 print '<meta http-equiv="X-UA-Compatible" content="IE=edge">'
 print '<meta name="viewport" content="width=device-width, initial-scale=1">'
-print '<meta name="theme-color" content="#7A1705">'
+print '<meta name="theme-color" content="#333399">'
 print '<meta name="description" content="results for the terms you just queried">'
 print '<meta name="author" content="Alexander Hayes">'
 print '<title>Search Results</title>'
@@ -93,7 +93,22 @@ if len(user_words) > 0:
 #        print('%s' % word)
 #    print('</p>')
     list_of_word_strings = [str(word) for word in stemmed_words]
-
+else:
+    TAIL="""
+    </div></div>
+    <footer class="footer" style="background-color:#333399;">
+    <div class="container">
+    <p class="text-muted" style="color:#EEEDEB; font-size:16px;"><a href="https://github.iu.edu/hayesall/">GitHub</a></p>
+    </div>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../STARAI/js/bootstrap.min.js"></script>
+    <script src="../STARAI/js/ie10-viewport-bug-workaround.js"></script>
+    </body>
+    </html>
+    """
+    print TAIL
+    exit()
 
 #inverted_index_dict = {}
 #with open('invindex.dat') as inverted_index:
@@ -179,7 +194,7 @@ sorted_frequency_dict.reverse()
 
 fixed_list = []
 current = 0
-maximum = 10
+maximum = 100
 for item in sorted_frequency_dict:
     if item[0] in stripped_most_dict:
         if current >= maximum:
@@ -188,18 +203,35 @@ for item in sorted_frequency_dict:
             fixed_list.append(item[0])
             current += 1
 
-total_found = 0
+#total_found = 0
 #print "\033[1;32m\n\nSuper-Google Results:\033[0m"
 #print '<p class="lead cleaned" style="color:#000000;">%s</p>' % str(len(fixed_list))
+
+# Buttons: go forward/backward
 if len(fixed_list) == 0:
     print '<p class="lead cleaned" style="color:#000000;">No results.</p>'
 else:
+    print '<center>'
+    print '<div class="row">'
+    print '<div class="col-sm-4"><input id="gobackward" style="padding: 2px 20px;" type="button" value="< Prev Page" onclick="prevPage();"></div>'
+    print '<div class="col-sm-4"><div class="currentPage"></div></div>'
+    print '<div class="col-sm-4"><input id="goforward" style="padding: 2px 20px;" type="button" value="Next Page >" onclick="nextPage();"></div>'
+    print '</div></center>'
+    print '<div class="container">'
+    on_page = 0
+    number = 0
     for item in fixed_list:
+        if (number % 10) is 0:
+            if on_page > 0:
+                print '</div>' #close the <div class="page on_page" --> all but last
+            on_page += 1
+            print '<div class="page ' + str(on_page) + '">'
+
         final_list = document_data_dict[item]#.split()
         url_to_print = 'https://www.fanfiction.net/s/' + str(item)
         title_to_print = final_list[0]
         author_href = '<a href="' + 'https://www.fanfiction.net/u/' + str(final_list[1]).replace('u','') + '">' + 'Author</a>'
-        link_href = '<h3><a href="' + url_to_print + '">' + title_to_print + '</a></h3>'
+        link_href = '<h3>' + str(number+1) + '. <a href="' + url_to_print + '">' + title_to_print + '</a></h3>'
         #frequency_to_print = "{0:.3f}".format(float(frequency_dict[item]))
         #frequency_to_print = str(frequency_dict[item])
         genre = final_list[2]
@@ -216,29 +248,71 @@ else:
             ', Words: ' + num_words + \
             ', Chapters: ' + num_chapt + \
             ', Status: ' + status
-        total_found += 1
-    '''
-    for item in fixed_list:
-        final_list = document_data_dict[item].split()
-        url_to_print = final_list[2]
-        title_to_print = final_list[1]
-        frequency_to_print = "{0:.3f}".format(float(frequency_dict[item]))
-        #print '  ' + str(frequency_to_print) + ') ' + url_to_print + '  -----  ' + title_to_print.replace('_',' ')
-        print '<p class="lead cleaned" style="color:#000000;"><a href="%s">%s</a></p>' % (str(url_to_print), str(title_to_print.replace('_',' ')))
-        total_found += 1
-    '''
+        number += 1
 
-#print '<p class="lead cleaned" style="color:#000000;">%s</p>' % len(inverted_index_dict)
-#print "Explored " + str(documents_explored) + " documents and found " + str(total_found) + " results."
+#closing the last div and the container div from above.
+if len(fixed_list) > 0:
+    print '</div></div>'
+    print '<br><br>'
+    print '<center>'
+    print '<div class="row">'
+    print '<div class="col-sm-4"><input id="gobackward" style="padding: 2px 20px;" type="button" value="< Prev Page" onclick="prevPage();scrollToTop();"></div>'
+    print '<div class="col-sm-4"><div class="currentPage"></div></div>'
+    print '<div class="col-sm-4"><input id="goforward" style="padding: 2px 20px;" type="button" value="Next Page >" onclick="nextPage();scrollToTop();"></div>'
+    print '</div></center>'
+
+#A couple buttons at the bottom of the page as well.
 
 print '<br><br><br>'
 print '</div></div>'
 print '<footer class="footer" style="background-color:#333399;">'
 print '<div class="container">'
-print '<p class="text-muted" style="color:#EEEDEB; font-size:16px;">Questions? Contact Alexander L. Hayes: hayesall(at)indiana(dot)edu | <a href="https://github.iu.edu/hayesall/">GitHub</a></p>'
+print '<p class="text-muted" style="color:#EEEDEB; font-size:16px;"><a href="https://github.iu.edu/hayesall/">GitHub</a></p>'
 print '</div>'
 print '</footer>'
 print '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
+
+SCRIPT = """<script>
+var pageIndex = 0
+var pages = document.getElementsByClassName("page")
+var numberOfPages = pages.length
+
+for (i=0; i < numberOfPages; i++) {
+    pages[i].style.display = "none";
+}
+
+function showPage(n) {
+    if (n > numberOfPages-1) {
+	pageIndex = 0
+    }
+    if (n < 0) {
+	pageIndex = numberOfPages-1
+    }
+    pages[pageIndex].style.display = "block";
+    $( "div.currentPage" ).replaceWith( '<div class="currentPage"><p>' + (pageIndex+1) + ' / ' + numberOfPages + '</div></p>' )
+}
+
+function nextPage() {
+    pages[pageIndex].style.display = "none";
+    pageIndex += 1
+    showPage(pageIndex)
+}
+
+function prevPage() {
+    pages[pageIndex].style.display = "none";
+    pageIndex -= 1
+    showPage(pageIndex)
+}
+showPage(pageIndex)
+</script>
+
+<script>
+function scrollToTop() {
+    $(window).scrollTop(0);
+}
+</script>
+"""
+print SCRIPT
 #<script>window.jQuery || document.write('<script src="../STARAI/js/vendor/jquery.min.js"><\/script>')</script>
 print '<script src="../STARAI/js/bootstrap.min.js"></script>'
 print '<script src="../STARAI/js/ie10-viewport-bug-workaround.js"></script>'
