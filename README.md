@@ -86,16 +86,18 @@ For the purpose of this example, I will not directly compare the results to thos
 
 ##### Algorithm:
 
-![A subsection of how this graph may look](media/directed-fanfiction-graph.jpg "graph subsection")
+  ![A subsection of how this graph may look](media/directed-fanfiction-graph.jpg "graph subsection")
+  _Blue [S] nodes represent stories, Violet [U] nodes represent users. Directed arrows are the edges between the nodes._
 
 I consider two types of nodes: stories and users. Each are referenced with a unique identifier on the website that can easily be looked up by specifying "fanfiction.net/u/#" for users or "fanfiction.net/s/#" for stories.
 
-Edges symbolize a type of contribution to the community.
-
-  * 'Story' Nodes have a one-to-one relationship with the user that authored them.
-  * 'User' Nodes point to stories, forming one-to-many relationships for the stories they write, or many-to-many for the stories they review.
+Edges symbolize a type of contribution to the community:
+  * Story [S] Nodes have a one-to-one relationship with the user that authored them.
+  * User [U] Nodes point to stories, forming one-to-many relationships for the stories they write, or one-to-many relationships with the stories they review.
 
 The resulting network (sample pictured above) symbolizes the contributions by community members in forms of writing or reviewing. If the goal is to match users with relevant results, the structure of the community--where other users gravitate to--is an interesting layer of complexity.
+
+The assumption is that the larger role a user plays in the associated community (through writing popular stories)
 
 [Return to Top](#i427---search-informatics---final-project)
 
@@ -105,7 +107,7 @@ The resulting network (sample pictured above) symbolizes the contributions by co
 
 In retrospect, it's hard to justify my lack of consideration for fanfics not written in English. The show was originally produced in French and is fairly popular in Spain.
 
-Between the two people I asked to review my results, one was fluent in Spanish, the other was fluent in French, and respectively: both lived in Spain and France for some period of time. All of us were fluent in English.
+Between the two people I asked to review my results, one was fluent in Spanish, the other was fluent in French, and respectively: each lived in Spain or France for some period of time. All of us were fluent in English.
 
 Both reported that the results made sense under two restrictions: typing random phrases and typing phrases I suggested as being related to the show. Queries submitted in a specific language tended to be effective at producing results in the target language. However, both noticed that short queries did not produce results *exclusively* in that language, especially in the cases where there were cognates or similar words in English. As an added complexity, Spanish queries more often would also return some results in French than French results would return results in Spanish. As the number of query terms increased though, this problem dissipated since term frequency was able to take over. Both reviewers were somewhat disappointed with the inability for the search engine to handle accented characters.
 
@@ -124,8 +126,9 @@ Simply multiplying the scores caused extremely popular stories (ones that typica
   * My **big** question: How are the communities shaped over time? (Azadeh worked on the [LinkedIn Economic Graph Challenge](http://news.indiana.edu/releases/iu/2015/06/iu-linkedin-project.shtml) for tracking economic trends over time. What are the cultural trends and shifts in FanFiction over time?)
   * Method for automatically adjusting the relevancy-scoring weights. I manually adjusted the weights of pagerank and term-frequency with the heuristic that the top few titles should make sense based on the keywords entered, and that a few stories should not dominate every query. I have document data in the form of term-frequency and metadata for each story, so it might be possible to create a classification model that adjusts the weights based on these features (a clever end-to-end deep-learning system perhaps?)
   * Each fanfic is associated with a small picture, how are the pictures related to the content? Reverse-search-by-image is a possibility in the meantime.
+  * Weigh the number of reviews over the number of chapters: reviews are submitted on a chapter-by-chapter basis and longer stories naturally have a higher-than-average number of reviews. Popularity should instead be measured by the average number of reviews per chapter, and eventually: the number of times it has been favorited.
   * Narrow search results with metadata (data about the stories: title, summary, chapters, complete/incomplete, genre, age rating, language).
-  * Currently there are some bugs when pulling metadata, characters are sometimes interpreted as the genre.
+  * Currently there are some bugs when pulling metadata: characters are sometimes interpreted as the genre.
   * Stem based on language: stories exist in English, French, Spanish, Catalan, and Polish (from ones I've pulled so far)
   * Find a parser that works on non-latin written languages (Arabic, Chinese, Hindi, Japanese, Russian, to name a few).
   * Store page hashes to easily compute if one has been updated: complete stories will not be changed, but new reviews can be added.
@@ -133,3 +136,41 @@ Simply multiplying the scores caused extremely popular stories (ones that typica
   * Sentiment analysis on reviews: overall are they positive, negative, or constructive?
 
 [Return to Top](#i427---search-informatics---final-project)
+
+---
+
+##### Code:
+
+The method I used is a semi-supervised version of webcrawling where I scraped pages based on content I knew would be interesting ahead of time. This is somewhat similar to topic-sensitive hidden web crawling, users and stories are stored as text on a page, but finding them is typically done through looking at a domain-specific category and knowing what information on a page is relevant.
+
+1. The first step was to collect story-ids for the stories I wanted to scrape. It was simple to reverse-engineer how FanFiction.Net stored their stories, so I ran a quick bash script to search for 261 stories and collect reference links (in the form of a unique number identifier) for the 6520 stories. For quality evaluation I also dumped the web address into the "sids.txt" file, but these could be removed later with `grep -v "http"`.
+
+   _"scrape_story_ids.sh"_ [View in Folder](scrape_story_ids.sh)
+   ```bash
+   BASE="https://www.fanfiction.net/cartoon/Code-Lyoko/?&str=1&r=103&p="
+   for i in {1..261}; do
+        URL=$BASE$i; echo "$URL" >> sids.txt
+    	PAGE="`wget --no-check-certificate -q -O - $URL`"
+    	echo "$PAGE" | grep "class=stitle" | cut -c117-137 | cut-d'/' -f 3 >> sids.txt
+    	sleep 6
+   done
+   ```
+
+2. I rewrote portions of some scripts I found on GitHub for scraping FanFiction pages, appropriately named: ["Fanfiction Scraper"](https://github.com/smilli/fanfiction). The project is maintained by [Smitha Milli](http://smithamilli.com/), an Electrical Engineering/Computer Science student at UC Berkeley.
+
+   * (As a side note, I updated my true [web crawler for following links](crawl.py), but wrote a separate one for this project)
+   * The Scraper [View Code](scraper.py):
+     I modified Smitha's original python code to have better error checking (the program would crash if there was only one chapter) and a higher rate-limit that used Poisson noise with a 2-second median.
+   * Analysis/Reduction [View Code](scrape_fiction.py)
+     Smitha's updated code was imported here as a package, then in one step this script downloaded the page; stored metadata, structure, and the inverted index; then proceeded to the next story. I set the original run to only scrape the first 3000 chapters, but this involved downloading each page and review page.
+
+3. Now that we had metadata.csv (similar to docs.dat), structure.csv (for calculating pagerank), and invindex.dat: it's time to put everything together.
+
+   * PageRank [View Code](pagerank.py)
+     Was calculated ahead of time with the contents of structure.csv, the contents were then written to a file called pr.pickle.
+   * Querying [View Code](search-results.cgi)
+     Search results were calculated based on 'most' ('and', 'or' can be added later), using the inverted index and pr.pickle to find the most relevant pages. Metadata for the results was shown to give the user some additional information before following a link. This was similar to [retrieve2.py](retrieve2.py), though the code was adapted but not specifically used.
+
+[Return to Top](#i427---search-informatics---final-project)
+
+---

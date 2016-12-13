@@ -120,7 +120,7 @@ for html_doc in document_data_dict.keys():
 for item in frequency_dict:
     # adding pagerank is the same as not including pagerank
     # multiplying seems to create the largest effect
-    frequency_dict[item] = frequency_dict[item] * pagerank[item]
+    frequency_dict[item] = frequency_dict[item] + (3 * pagerank[item])
 
 # "selecting elements of python dictionary greater than a certain value"
 stripped_most_dict = dict((k, v) for k, v in most_dict.items() if v >= int(math.ceil(len(list_of_word_strings)/2)))
@@ -130,7 +130,7 @@ sorted_frequency_dict.reverse()
 
 fixed_list = []
 current = 0
-maximum = 10
+maximum = 100
 for item in sorted_frequency_dict:
     if item[0] in stripped_most_dict:
         if current >= maximum:
@@ -160,6 +160,7 @@ for item in fixed_list:
     num_chapt = str(final_list[6])
     status = final_list[7]
     print '  ' + str(frequency_to_print) + ') ' + link_href
+    '''
     print '          ' + author_href + \
         ', Genre: ' + genre + \
         ', Rated: ' + rating + \
@@ -167,6 +168,7 @@ for item in fixed_list:
         ', Words: ' + num_words + \
         ', Chapters: ' + num_chapt + \
         ', Status: ' + status
+    '''
     total_found += 1
 
-print "Explored " + str(documents_explored) + " documents and found " + str(total_found) + " results."
+print "Explored " + str(len(sorted_frequency_dict)) + " documents and found " + str(total_found) + " results."

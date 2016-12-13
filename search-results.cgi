@@ -56,12 +56,17 @@ print 'margin: auto;'
 print 'width: 50%;'
 print 'padding: 15px;'
 print '}'
+print '.navbar {'
+print 'min-height:3px;'
+print 'font-family:Verdana,Geneva,sans-serif;'
+print 'padding-left: 5px;'
+print '}'
 print '</style>'
 print '</head>'
 print '<body>'
 print '<nav class="navbar navbar-default navbar-fixed-top" style="background-color:#333399;">'
 print '<div class="container">'
-print '<div class="navbar-header" style="padding: 0.5em 10px; vertical-align: middle; width: 1300px; color: #EEEDEB; font-size: 1.4em;">'
+print '<div class="navbar-header" style="padding: 5px 0px; vertical-align: middle; width: 100%; color: #EEEDEB; font-size: 1.1em;">'
 print 'FanFiction | unleash your imagination'
 print '</div></div></nav>'
 print '<div class="container">'
@@ -110,9 +115,6 @@ else:
     print TAIL
     exit()
 
-#inverted_index_dict = {}
-#with open('invindex.dat') as inverted_index:
-#    inverted_index_list = inverted_index.readlines()
 with open('invindex.dat', 'r') as input_file:
     reader = csv.reader(input_file, delimiter='|')
     inverted_index_dict = dict((rows[0], rows[1:]) for rows in reader)
@@ -123,32 +125,6 @@ with open('metadata.csv', 'r') as input_file:
     document_data_dict = dict((rows[0], rows[1:]) for rows in reader)
 
 pagerank = pickle.load( open( 'pr.pickle', 'rb') )
-
-#for line in inverted_index_list:
-#    content = line.split()
-#    word = str(content[0])
-#    documents_as_string = ""
-#    for item in content[2:]:
-#        documents_as_string = documents_as_string + str(item) + ' '
-#    inverted_index_dict[word] = documents_as_string
-
-#testing
-#print '<p class="lead cleaned" style="color:#000000;">%s</p>' % len(inverted_index_dict)
-
-#metadata_dict replaces docs.dat, the number identifier is also the address on fanfiction.net/s/...
-#author is at fanfiction.net/u/...
-
-#document_data_dict = {}
-#with open('docs.dat') as doc_data:
-#    document_data_list = doc_data.readlines()
-
-#for line in document_data_list:
-#    content = line.split()
-#    key = str(content[0])
-#    document_info = ""
-#    for item in content[1:]:
-#        document_info = document_info + str(item) + ' '
-#    document_data_dict[key] = document_info
 
 documents_explored = 0
 
@@ -184,7 +160,7 @@ for html_doc in document_data_dict.keys():
 for item in frequency_dict:
     #adding pagerank is the same as not including pagerank since they are so small (unless I inflated them a bit?)
     #multiplying seems to have the largest effect on the outcome
-    frequency_dict[item] = frequency_dict[item] * pagerank[item]
+    frequency_dict[item] = frequency_dict[item] + (pagerank[item]/3)
 
 # "selecting elements of python dictionary greater than a certain value"
 stripped_most_dict = dict((k, v) for k, v in most_dict.items() if v >= int(math.ceil(len(list_of_word_strings)/2)))
@@ -194,7 +170,7 @@ sorted_frequency_dict.reverse()
 
 fixed_list = []
 current = 0
-maximum = 100
+maximum = 150 #increased from 100
 for item in sorted_frequency_dict:
     if item[0] in stripped_most_dict:
         if current >= maximum:
@@ -221,7 +197,7 @@ else:
     on_page = 0
     number = 0
     for item in fixed_list:
-        if (number % 10) is 0:
+        if (number % 15) is 0: #increased from 10
             if on_page > 0:
                 print '</div>' #close the <div class="page on_page" --> all but last
             on_page += 1
