@@ -24,7 +24,7 @@ To paraphrase Professor Nick Mount, humans are art animals‒we seek to find mea
 
 Maciej Cegłowski gave a great talk called ["Deep Fried Data"](http://idlewords.com/talks/deep_fried_data.htm) about machine learning, data collection, archiving the internet, and his fears that the web will become less free. Needless to say, I highly recommend it. FanFiction is not without opponents, plenty of authors see characters and stories as their own, and perhaps rightfully so. I hope this can be a useful tool to community members, I myself have never written a fanfic, but I hope in my own small way I can contribute to its existence and perhaps its preservation.
 
-[#i427---search-informatics---final-project](Return to Top)
+[Return to Top](#i427---search-informatics---final-project)
 
 ---
 
@@ -34,7 +34,7 @@ Refer to FanFiction.Net's ["Terms of Service"](https://www.fanfiction.net/tos/) 
 
 > E. You agree not to use or launch any automated system, including without limitation, "robots," "spiders," or "offline readers," that accesses the Website in a manner that sends more request messages to the FanFiction.Net servers in a given period of time than a human can reasonably produce in the same period by using a conventional on-line web browser. Notwithstanding the foregoing, FanFiction.Net grants the operators of public search engines permission to use spiders to copy materials from the site for the sole purpose of and solely to the extent necessary for creating publicly available searchable indices of the materials, but not caches or archives of such materials. FanFiction.Net reserves the right to revoke these exceptions either generally or in specific cases. You agree not to collect or harvest any personally identifiable information, including account names, from the Website, nor to use the communication systems provided by the Website (e.g. comments, email) for any commercial solicitation purposes. You agree not to solicit, for commercial purposes, any users of the Website with respect to their User Submissions.
 
-[#i427---search-informatics---final-project](Return to Top)
+[Return to Top](#i427---search-informatics---final-project)
 
 ---
 
@@ -80,13 +80,7 @@ From these 328 documents published over the course of a year, seven results cont
 
 For the purpose of this example, I will not directly compare the results to those that would be obtained from Dark Lord Potter's search engine (it's a skewed comparison since it does not include Code Lyoko fanfiction).
 
-[#i427---search-informatics---final-project](Return to Top)
-
----
-
-##### Reviews:
-
-[#i427---search-informatics---final-project](Return to Top)
+[Return to Top](#i427---search-informatics---final-project)
 
 ---
 
@@ -94,22 +88,41 @@ For the purpose of this example, I will not directly compare the results to thos
 
 ![A subsection of how this graph may look](media/directed-fanfiction-graph.jpg "graph subsection")
 
-I consider two types of nodes: stories and users. Each are referenced with a unique identifier on the website that can easily be looked up by specifying "www.fanfiction.net/u/#" for users or "www.fanfiction.net/s/#" for stories.
+I consider two types of nodes: stories and users. Each are referenced with a unique identifier on the website that can easily be looked up by specifying "fanfiction.net/u/#" for users or "fanfiction.net/s/#" for stories.
 
 Edges symbolize a type of contribution to the community.
 
   * 'Story' Nodes have a one-to-one relationship with the user that authored them.
   * 'User' Nodes point to stories, forming one-to-many relationships for the stories they write, or many-to-many for the stories they review.
 
-The resulting network (sample pictured above) symbolizes the contributions by community members in forms of writing or reviewing.
+The resulting network (sample pictured above) symbolizes the contributions by community members in forms of writing or reviewing. If the goal is to match users with relevant results, the structure of the community--where other users gravitate to--is an interesting layer of complexity.
 
-[#i427---search-informatics---final-project](Return to Top)
+[Return to Top](#i427---search-informatics---final-project)
+
+---
+
+##### Reviews:
+
+In retrospect, it's hard to justify my lack of consideration for fanfics not written in English. The show was originally produced in French and is fairly popular in Spain.
+
+Between the two people I asked to review my results, one was fluent in Spanish, the other was fluent in French, and respectively: both lived in Spain and France for some period of time. All of us were fluent in English.
+
+Both reported that the results made sense under two restrictions: typing random phrases and typing phrases I suggested as being related to the show. Queries submitted in a specific language tended to be effective at producing results in the target language. However, both noticed that short queries did not produce results *exclusively* in that language, especially in the cases where there were cognates or similar words in English. As an added complexity, Spanish queries more often would also return some results in French than French results would return results in Spanish. As the number of query terms increased though, this problem dissipated since term frequency was able to take over. Both reviewers were somewhat disappointed with the inability for the search engine to handle accented characters.
+
+Explaining why things are the way they are would require further testing, but my suspicion is that it has to do with how words are stemmed and stopped. The nltk stopword dictionary only contains English words, and rules for the porter stemmer are based on English. In cases where there are cognates or similar words in English, it makes sense that queries in one language would occasionally produce results in a different language, and the influence of pagerank could also play a role in this.
+
+Evaluating the results in English led me to make quite a few adjustments to the weights of pagerank or term-frequency. My original assessment was to multiply the scores: the pagerank numbers were so small compared to the term-frequency scores that addition was about the same as not including pagerank at all.
+
+Simply multiplying the scores caused extremely popular stories (ones that typically had 100+ reviews) to dominate the search results, and simply due to their length it was common for them to have words that matched a wide variety of queries. After a decent amount of testing (heavily based on trial-and-error), I came up with: `Score = TermFrequency + (3 * PageRank)`. This seemed to strike the balance that I wanted, increasing the influence of pagerank by just enough that it could influence the final results without dominating them.
+
+[Return to Top](#i427---search-informatics---final-project)
 
 ---
 
 ##### Further Work:
 
   * My **big** question: How are the communities shaped over time? (Azadeh worked on the [LinkedIn Economic Graph Challenge](http://news.indiana.edu/releases/iu/2015/06/iu-linkedin-project.shtml) for tracking economic trends over time. What are the cultural trends and shifts in FanFiction over time?)
+  * Method for automatically adjusting the relevancy-scoring weights. I manually adjusted the weights of pagerank and term-frequency with the heuristic that the top few titles should make sense based on the keywords entered, and that a few stories should not dominate every query. I have document data in the form of term-frequency and metadata for each story, so it might be possible to create a classification model that adjusts the weights based on these features (a clever end-to-end deep-learning system perhaps?)
   * Each fanfic is associated with a small picture, how are the pictures related to the content? Reverse-search-by-image is a possibility in the meantime.
   * Narrow search results with metadata (data about the stories: title, summary, chapters, complete/incomplete, genre, age rating, language).
   * Currently there are some bugs when pulling metadata, characters are sometimes interpreted as the genre.
@@ -119,4 +132,4 @@ The resulting network (sample pictured above) symbolizes the contributions by co
   * Scrape metadata from user profiles: "my stories," "favorite stories," "favorite authors." Include this in the pagerank calculation.
   * Sentiment analysis on reviews: overall are they positive, negative, or constructive?
 
-[#i427---search-informatics---final-project](Return to Top)
+[Return to Top](#i427---search-informatics---final-project)
