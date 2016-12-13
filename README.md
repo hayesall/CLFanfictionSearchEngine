@@ -174,13 +174,19 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
      `python pagerank.py structure.csv`
        
        * INPUT: a .csv ('|' as delimiter) file where the first element is a node, and subsequent elements are nodes with an edge in between.
+
        * `structure.csv` is an output of scrape_fiction.py
+
        * OUTPUT: creates a pickle file: `pr.pickle` of each node and its pagerank score.
 
      Was calculated ahead of time with the contents of structure.csv, the contents were then written to a file called pr.pickle.
    * Querying [View Code](search-results.cgi)
 
+     `python retrieve2.py [word1] [word2] [word3]` or `search-results.cgi`
+
      Search results were calculated based on 'most' ('and', 'or' can be added later), using the inverted index and pr.pickle to find the most relevant pages. Metadata for the results was shown to give the user some additional information before following a link. This was similar to [retrieve2.py](retrieve2.py), though the code was adapted but not specifically used.
+
+     You can demo [search-results.cgi on the website](cgi.soic.indiana.edu/~hayesall/engine/index.html). The script calculates the top 150 results: splitting them into 15-per-page chunks that can be navigated through using Ajax/Javascript calls that are bound to next/prev buttons.
 
 [Return to Top](#i427---search-informatics---final-project)
 
