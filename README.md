@@ -10,6 +10,7 @@ Alexander L. Hayes - [FanFiction Search Engine](cgi.soic.indiana.edu/~hayesall/e
   2. [Conditions](#conditions)
   3. [Background](#background)
   4. [Reviews](#reviews)
+  5. [Further Work](#further-work)
 
 ---
 
@@ -23,6 +24,8 @@ To paraphrase Professor Nick Mount, humans are art animals‒we seek to find mea
 
 Maciej Cegłowski gave a great talk called ["Deep Fried Data"](http://idlewords.com/talks/deep_fried_data.htm) about machine learning, data collection, archiving the internet, and his fears that the web will become less free. Needless to say, I highly recommend it. FanFiction is not without opponents, plenty of authors see characters and stories as their own, and perhaps rightfully so. I hope this can be a useful tool to community members, I myself have never written a fanfic, but I hope in my own small way I can contribute to its existence and perhaps its preservation.
 
+[#i427---search-informatics---final-project](Return to Top)
+
 ---
 
 ##### Conditions:
@@ -30,6 +33,8 @@ Maciej Cegłowski gave a great talk called ["Deep Fried Data"](http://idlewords.
 Refer to FanFiction.Net's ["Terms of Service"](https://www.fanfiction.net/tos/) for full details.
 
 > E. You agree not to use or launch any automated system, including without limitation, "robots," "spiders," or "offline readers," that accesses the Website in a manner that sends more request messages to the FanFiction.Net servers in a given period of time than a human can reasonably produce in the same period by using a conventional on-line web browser. Notwithstanding the foregoing, FanFiction.Net grants the operators of public search engines permission to use spiders to copy materials from the site for the sole purpose of and solely to the extent necessary for creating publicly available searchable indices of the materials, but not caches or archives of such materials. FanFiction.Net reserves the right to revoke these exceptions either generally or in specific cases. You agree not to collect or harvest any personally identifiable information, including account names, from the Website, nor to use the communication systems provided by the Website (e.g. comments, email) for any commercial solicitation purposes. You agree not to solicit, for commercial purposes, any users of the Website with respect to their User Submissions.
+
+[#i427---search-informatics---final-project](Return to Top)
 
 ---
 
@@ -60,7 +65,7 @@ There exist several implementations for searching the content. I will provide a 
   * Sort by: Updated, Published, Wordcount, Chapters, Reviews, Favorites, Follows, "DLP Review Score," "Popular & Recent," "Long & Recent"
   * Descending/Ascending order
   
-  Initially this appears to be a step in the right direction since it has a longer list of features. But the further you look into it, the more you realize it leaves a lot to be desired. The list of features is longer, but in reality there isn't much you can find with this search engine that you cannot find with FanFiction.Net's built-in implementation.
+  Initially this appears to be a step in the right direction since it has a longer list of features. But the further you look into it, the more you realize it leaves a lot to be desired. The list of features is longer, but in reality there isn't much you can find with this search engine that you cannot find with FanFiction.Net's built-in implementation. Ultimately the search is still restricted to searching by title or the keywords in the summary, with the added benefit of being able to trim the categories a little further (by specifying word count, categories, and genre).
 
 3. [Alexander's Code Lyoko Search Engine](http://cgi.soic.indiana.edu/~hayesall/engine/index.html): (implemented in Python and a bit of Bash)
   * Specific to one fandom (Code Lyoko)
@@ -73,6 +78,45 @@ Imagine for a moment that you want all of Code Lyoko stories containing a refere
 
 From these 328 documents published over the course of a year, seven results contain references to Twitter, while the [top result](https://www.fanfiction.net/s/12035101) has an underlying cyber-bullying theme. If you use the built-in search tool on FanFiction.Net, the [only result that comes up](https://www.fanfiction.net/s/8429561/1/Tweethearts).
 
-For the purpose of this example, I will not consider Dark Lord Potter's search engine since it does not include Code Lyoko.
+For the purpose of this example, I will not directly compare the results to those that would be obtained from Dark Lord Potter's search engine (it's a skewed comparison since it does not include Code Lyoko fanfiction).
+
+[#i427---search-informatics---final-project](Return to Top)
+
+---
 
 ##### Reviews:
+
+[#i427---search-informatics---final-project](Return to Top)
+
+---
+
+##### Algorithm:
+
+![A subsection of how this graph may look](media/directed-fanfiction-graph.jpg "graph subsection")
+
+I consider two types of nodes: stories and users. Each are referenced with a unique identifier on the website that can easily be looked up by specifying "www.fanfiction.net/u/#" for users or "www.fanfiction.net/s/#" for stories.
+
+Edges symbolize a type of contribution to the community.
+
+  * 'Story' Nodes have a one-to-one relationship with the user that authored them.
+  * 'User' Nodes point to stories, forming one-to-many relationships for the stories they write, or many-to-many for the stories they review.
+
+The resulting network (sample pictured above) symbolizes the contributions by community members in forms of writing or reviewing.
+
+[#i427---search-informatics---final-project](Return to Top)
+
+---
+
+##### Further Work:
+
+  * My **big** question: How are the communities shaped over time? (Azadeh worked on the [LinkedIn Economic Graph Challenge](http://news.indiana.edu/releases/iu/2015/06/iu-linkedin-project.shtml) for tracking economic trends over time. What are the cultural trends and shifts in FanFiction over time?)
+  * Each fanfic is associated with a small picture, how are the pictures related to the content? Reverse-search-by-image is a possibility in the meantime.
+  * Narrow search results with metadata (data about the stories: title, summary, chapters, complete/incomplete, genre, age rating, language).
+  * Currently there are some bugs when pulling metadata, characters are sometimes interpreted as the genre.
+  * Stem based on language: stories exist in English, French, Spanish, Catalan, and Polish (from ones I've pulled so far)
+  * Find a parser that works on non-latin written languages (Arabic, Chinese, Hindi, Japanese, Russian, to name a few).
+  * Store page hashes to easily compute if one has been updated: complete stories will not be changed, but new reviews can be added.
+  * Scrape metadata from user profiles: "my stories," "favorite stories," "favorite authors." Include this in the pagerank calculation.
+  * Sentiment analysis on reviews: overall are they positive, negative, or constructive?
+
+[#i427---search-informatics---final-project](Return to Top)
