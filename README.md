@@ -12,7 +12,7 @@ Alexander L. Hayes - [FanFiction Search Engine](http://cgi.soic.indiana.edu/~hay
   4. [Algorithm Design](#algorithm-design)
   5. [Reviews](#reviews)
   6. [Further Work](#further-work)
-  7. [Appendix / Code)](#appendix)
+  7. [Appendix / Code](#appendix)
 
 ---
 
@@ -144,7 +144,7 @@ Simply multiplying the scores caused extremely popular stories (ones that typica
 
 ##### Appendix:
 
-The method I used is a semi-supervised version of webcrawling where I scraped pages based on content I knew would be interesting ahead of time. This is somewhat similar to topic-sensitive hidden web crawling, users and stories are stored as text on a page, but finding them is typically done through looking at a domain-specific category and knowing what information on a page is relevant.
+The method I used is a semi-supervised version of webcrawling where I scraped pages based on content I knew would be interesting ahead of time. This is somewhat similar to *topic-sensitive hidden web crawling*, users and stories are stored as text on a page, but finding them is typically done through looking at a domain-specific category and knowing what information on a page is relevant.
 
 1. The first step was to collect story-ids. Reverse-engineering how FanFiction.Net stored their stories was fairly straightforward, so I ran a quick bash script to search for stories on the 261 pages I knew would contain the information I wanted. For each, I collected reference links in the form of a unique number identifier for the 6520 stories. For quality evaluation I also dumped the web address into the "sids.txt" file, but these could be removed later with `grep -v "http"`.
 
@@ -182,7 +182,6 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
      * `python scrape_fiction.py`
 
        * INPUT: none on the commandline: the script imports a file called "sids.txt" (which is simply a list of story-IDs)
-       
        * OUTPUT: creates three files: metadata.csv (similar to docs.dat), structure.csv (for calculating PageRank), and invindex.dat.
 
 3. Now that we have the  metadata, structure, and the inverted index: it's time to put everything together.
@@ -197,7 +196,8 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
        * OUTPUT: creates a pickle file: `pr.pickle` of each node and its pagerank score.
 
-     Was calculated ahead of time with the contents of structure.csv, the contents were then written to a file called pr.pickle.
+     Pagerank was calculated ahead of time with the contents of structure.csv, the contents were then written to a file called pr.pickle. Since PageRank is a static score in this example, this was important to drastically increase performance time.
+
    * Querying [View Code](search-results.cgi)
 
      `python retrieve2.py [word1] [word2] [word3]` or `search-results.cgi`
