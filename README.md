@@ -6,14 +6,26 @@ Alexander L. Hayes - [FanFiction Search Engine](http://cgi.soic.indiana.edu/~hay
 
 ##### Table of Contents:
 
-  1. [Overview](#overview)
-  2. [Terms and Conditions](#terms-and-conditions)
-  3. [Background](#background)
-  4. [Algorithm Design](#algorithm-design)
-  5. [Reviews](#reviews)
-  6. [Further Work](#further-work)
-  7. [Appendix / Code](#appendix)
+  1. [Changelog](#changelog)
+  2. [Overview](#overview)
+  3. [Terms and Conditions](#terms-and-conditions)
+  4. [Background](#background)
+  5. [Algorithm Design](#algorithm-design)
+  6. [Reviews](#reviews)
+  7. [Further Work](#further-work)
+  8. [Appendix / Code](#appendix)
 
+---
+
+##### Changelog:
+
+1. *Update 12-14-2016:* I finished crawling all 6520 fanfics. During crawling, 10 could not be downloaded (I'll investigate those later).
+
+  * Language Representation (in order of frequency): English (6044), Spanish (270), French (134), Indonesian (), Polish, Catalan, Finnish, Portuguese.
+  Dutch, German, Italian, Latin, Swedish, Norweigian, and Vietnamese each had one fanfic.
+
+  * Extremely common words take quite a while to process (e.g.: character names from the show). I'll try to remedy this in the next version by creating a dictionary of dictionaries for words: documents in the inverted index are currently stored as lists and I suspect that iterating through 4000 lists is taking a long time.
+  
 ---
 
 ##### Overview:
