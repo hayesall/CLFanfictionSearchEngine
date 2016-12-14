@@ -21,7 +21,7 @@ Alexander L. Hayes - [FanFiction Search Engine](http://cgi.soic.indiana.edu/~hay
 
 1. *Update 12-14-2016:* I finished crawling all 6520 fanfics. During crawling, 10 could not be downloaded (I'll investigate those later).
 
-  * Language Representation (in order of frequency): English (6044), Spanish (270), French (134), Indonesian (), Polish, Catalan, Finnish, Portuguese.
+  * Language Representation (in order of frequency): English (6044), Spanish (270), French (134), Indonesian (32), Polish (14), Catalan (13), Finnish (4), Portuguese (2).
   Dutch, German, Italian, Latin, Swedish, Norweigian, and Vietnamese each had one fanfic.
 
   * Extremely common words take quite a while to process (e.g.: character names from the show). I'll try to remedy this in the next version by creating a dictionary of dictionaries for words: documents in the inverted index are currently stored as lists and I suspect that iterating through 4000 lists is taking a long time.
