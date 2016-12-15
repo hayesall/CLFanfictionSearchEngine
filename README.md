@@ -11,9 +11,10 @@ Alexander L. Hayes - [FanFiction Search Engine](http://cgi.soic.indiana.edu/~hay
   3. [Terms and Conditions](#terms-and-conditions)
   4. [Background](#background)
   5. [Algorithm Design](#algorithm-design)
-  6. [Reviews](#reviews)
-  7. [Further Work](#further-work)
-  8. [Appendix / Code](#appendix)
+  6. [Network Images](#network)
+  7. [Reviews](#reviews)
+  8. [Further Work](#further-work)
+  9. [Appendix / Code](#appendix)
 
 ---
 
@@ -115,6 +116,46 @@ The resulting network (sample pictured above) symbolizes the contributions by co
 The assumption is that the larger role a user plays in the associated community (through writing popular stories), the more likely their stories are to be relevant, and the more likely it is that stories they review will be relevant.
 
 [Return to Top](#i427---search-informatics---final-project)
+
+---
+
+##### Network:
+
+A realized version of the network described above. Similar to the previous section, blue nodes represent stories, violet nodes represent users.
+
+  ![doubles](media/fan-network5.png "doubles")
+
+  _Single Edges are reviews, Double edges show a user wrote a story, Triple edges imply a user wrote and reviewed their own story._
+
+  ![lonely nodes](media/fan-network3.png "lonely nodes")
+
+  _Triple edges imply a user wrote and reviewed their own story._
+
+  ![Pinwheels](media/fan-network1.png "pinwheels")
+
+  _Users tend to group around stories, though some stories receive only a small amount of attention._
+
+  ![all pinwheels](media/fan-network2.png "all pinwheels")
+
+  ![super writers](media/fan-network4.png "super writers")
+
+  _Occasionally there are writers near the peripherals of the network that write a lot of stories, but their stories do not receive much attention._
+
+  ![sides of the network](media/fan-network6.png "sides of the network")
+
+  _But the majority of the network wraps into the connected component_
+
+  ![density](media/fan-network7.png "density")
+
+  _Approaching from the other side, as we move toward the center of the network we begin noticing "superstar reviewers" who contribute by reviewing a large number of stories._
+
+  ![the center](media/fan-network8.png "the center")
+
+  _The closer we get to the center, the more we notice the stories and users that are most central to the network. The overlapping connections begin to make it difficult to distinguish how many conections exist._
+
+  ![the network](media/fan-network9.png "the network")
+
+  _Perhaps it's best to take a step back and view the whole picture: 6520 stories in 15 languages written over the course of twelve years. Totalling to a little over 30,000 chapters and millions of words_
 
 ---
 
