@@ -125,7 +125,7 @@ A realized version of the network described above. Similar to the previous secti
 
   ![doubles](media/fan-network5.png "doubles")
 
-  _Single Edges are reviews, Double edges show a user wrote a story, Triple edges imply a user wrote and reviewed their own story._
+  _Single Edges are reviews, Double edges show a user wrote a story_
 
   ![lonely nodes](media/fan-network3.png "lonely nodes")
 
@@ -136,6 +136,8 @@ A realized version of the network described above. Similar to the previous secti
   _Users tend to group around stories, though some stories receive only a small amount of attention._
 
   ![all pinwheels](media/fan-network2.png "all pinwheels")
+
+  _There are plenty of stories that fit this category._
 
   ![super writers](media/fan-network4.png "super writers")
 
