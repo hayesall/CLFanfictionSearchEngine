@@ -32,8 +32,8 @@ def scrape_data(list_of_story_ids):
     stemmer = PorterStemmer()
     
     for element in list_of_story_ids:
-        if total_chapters > 3000:
-            break
+        #if total_chapters > 3000:
+        #    break
         print 'Pulled %s chapters so far.' % total_chapters
         element = int(element)
         try:
@@ -85,6 +85,8 @@ def scrape_data(list_of_story_ids):
             all_words = []
             for chapter in story['chapters']:
                 text = story['chapters'][chapter]
+                with open('training_data.txt','a') as wf:
+                    wf.write(text)
                 text = re.sub(pattern, ' ', text.lower())
                 word_list = nltk.word_tokenize(text)
                 filtered_and_stemmed_words = [stemmer.stem(word) \
