@@ -8,27 +8,44 @@ try:
 except ImportError:
     print "Couldn't find numpy package."
     exit()
+
 import time, re, requests
 from bs4 import BeautifulSoup
 
+def poisson_time():
+    # I'm not quite satisfied with one second being the rate limit, so I'm introducing
+    # noise based on a poisson distribution. -Alexander
+    wait_time = (np.random.poisson(2,1))[0]
+    time.sleep(wait_time)
+    
 class Scraper:
 
     def __init__(self):
         self.base_url = 'http://fanfiction.net/'
         self.rate_limit = 1
         self.parser = "html.parser"
+    
+    def save_image(self, option):
+        # I want an option to download the image associated with the fanfic
+        # (there may be some interesting properties I would like to explore)
+        # However, after trying a simple script, it appears that images can only
+        # be opened when the browser properly identifies the user through fanfiction.net
+        # otherwise navigating to the link results in a 403 forbidden error.
+        # - Alexander
+        pass
 
     def get_genres(self, genre_text):
-        genres = genre_text.split('/')
-        # Hurt/Comfort is annoying because of the '/'
-        corrected_genres = []
-        for genre in genres:
-            if genre == 'Hurt':
-                corrected_genres.append('Hurt/Comfort')
-            elif genre == 'Comfort':
-                continue
-            else:
-                corrected_genres.append(genre)
+        #swapping definitions to deal with the case where no genre is specified.
+        
+        genre_list = ['Adventure', 'Angst', 'Crime', 'Drama', 'Family', 'Fantasy', 'Friendship', \
+                      'General', 'Horror', 'Humor', 'Hurt/Comfort', 'Mystery', 'Parody', 'Poetry', \
+                      'Romance', 'SciFi', 'Spiritual', 'Supernatural', 'Suspense', 'Tragedy', 'Western']
+
+        corrected_genres = [genre for genre in genre_list if genre in genre_text]
+        if not corrected_genres:
+            # If genre is not specified, default to 'General'
+            corrected_genres = ['General']
+
         return corrected_genres
 
     def scrape_story_metadata(self, story_id):
@@ -55,15 +72,26 @@ class Scraper:
         result = requests.get(url)
         html = result.content
         soup = BeautifulSoup(html, self.parser)
+        
+        #pre_story_links: used to find the canon and story (e.g. Books/Harry Potter)
         pre_story_links = soup.find(id='pre_story_links').find_all('a')
+        
         author_id = int(re.search(r"var userid = (.*);", str(soup)).groups()[0]);
+        
         title = re.search(r"var title = (.*);", str(soup)).groups()[0];
         title = unquote_plus(title)[1:-1]
+
         metadata_div = soup.find(id='profile_top')
         times = metadata_div.find_all(attrs={'data-xutime':True})
         metadata_text = metadata_div.find(class_='xgray xcontrast_txt').text
-        metadata_parts = metadata_text.split('-')
+        #metadata_parts = metadata_text.split('-')
+
+        metadata_parts = metadata_text.replace('Sci-Fi','SciFi')
+        metadata_parts = metadata_parts.split('-')
+
+        # I updated get_genres to default to 'General' if genre was not specified. -Alexander
         genres = self.get_genres(metadata_parts[2].strip())
+                                               
 
         # occasionally there is only one time listed when there is only one chapter
         # if there is one time, the only time is the time it was published
@@ -126,26 +154,25 @@ class Scraper:
             num_chapters = 1
 
         # rate limit to follow fanfiction.net TOS
-        time.sleep(self.rate_limit)
+        poisson_time()
+        #time.sleep(self.rate_limit)
+
+
         for chapter_id in range(1, num_chapters + 1):
             print "Chapter %s / %s" % (str(chapter_id), str(num_chapters))
 
-            # I'm not quite satisfied with one second being the rate limit, so I'm introducing
-            # noise based on a poisson distribution
-            wait_time = (np.random.poisson(2,1))[0]
-            time.sleep(wait_time)
-            #time.sleep(self.rate_limit)
+            #WAIT
+            poisson_time()
 
             chapter = self.scrape_chapter(story_id, chapter_id)
-            wait_time = (np.random.poisson(2,1))[0]
-            time.sleep(wait_time)
             
-            time.sleep(self.rate_limit)
+            #WAIT
+            poisson_time()
             chapter_reviews = self.scrape_reviews_for_chapter(
                 story_id, chapter_id)
             metadata['chapters'][chapter_id] = chapter
             metadata['reviews'][chapter_id] = chapter_reviews
-        print '\n'
+        #print '\n'
         return metadata
 
     def scrape_chapter(self, story_id, chapter_id, keep_html=False):
@@ -181,13 +208,24 @@ class Scraper:
                 user_id = int(match.groups()[0])
             else:
                 user_id = None
-            #time = review_td.find('span', attrs={'data-xutime':True})
-            #time = int(time['data-xutime'])
-            review = {
-                #'time': time,
-                'user_id': user_id,
-                #'text': review_td.div.text.encode('utf8')
-            }
-            reviews.append(review)
+
+            time = review_td.find('span', attrs={'data-xutime':True})
+            if not time:
+                time = 'None'
+            else:
+                time = int(time['data-xutime'])
+
+            # Wrapping this in a try/except block. Extracting the text throws an error if
+            # 'No Reviews found.' This probably isn't the most elegant but it seems to work.
+            # -Alexander
+            try:
+                review = {
+                    'time': time,
+                    'user_id': user_id,
+                    'text': review_td.div.text.encode('utf8')
+                }
+                reviews.append(review)
+            except:
+                continue
         return reviews
 
