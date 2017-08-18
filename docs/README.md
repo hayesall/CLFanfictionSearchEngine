@@ -245,7 +245,7 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
      `python pagerank.py structure.csv`
        
-       * INPUT: a .csv ('|' as delimiter) file where the first element is a node, and subsequent elements are nodes with an edge in between.
+       * INPUT: a .csv ('&#124;' as delimiter) file where the first element is a node, and subsequent elements are nodes with an edge in between.
 
        * `structure.csv` is an output of scrape_fiction.py
 
