@@ -101,7 +101,7 @@ For the purpose of this example, I will not directly compare the results to thos
 
 ##### Algorithm Design:
 
-  ![A subsection of how this graph may look](media/directed-fanfiction-graph.jpg "graph subsection")
+  ![A subsection of how this graph may look](../media/directed-fanfiction-graph.jpg "graph subsection")
 
   _Blue [S] nodes represent stories, Violet [U] nodes represent users. Directed arrows are the edges between the nodes._
 
@@ -123,39 +123,39 @@ The assumption is that the larger role a user plays in the associated community 
 
 A realized version of the network described above. Similar to the previous section, blue nodes represent stories, violet nodes represent users.
 
-  ![doubles](media/fan-network5.png "doubles")
+  ![doubles](../media/fan-network5.png "doubles")
 
   _Single Edges are reviews, Double edges show a user wrote a story_
 
-  ![lonely nodes](media/fan-network3.png "lonely nodes")
+  ![lonely nodes](../media/fan-network3.png "lonely nodes")
 
   _Triple edges imply a user wrote and reviewed their own story._
 
-  ![Pinwheels](media/fan-network1.png "pinwheels")
+  ![Pinwheels](../media/fan-network1.png "pinwheels")
 
   _Users tend to group around stories, though some stories receive only a small amount of attention._
 
-  ![all pinwheels](media/fan-network2.png "all pinwheels")
+  ![all pinwheels](../media/fan-network2.png "all pinwheels")
 
   _There are plenty of stories that fit this category._
 
-  ![super writers](media/fan-network4.png "super writers")
+  ![super writers](../media/fan-network4.png "super writers")
 
   _Occasionally there are writers near the peripherals of the network that write a lot of stories, but their stories do not receive much attention._
 
-  ![sides of the network](media/fan-network6.png "sides of the network")
+  ![sides of the network](../media/fan-network6.png "sides of the network")
 
   _But the majority of the network wraps into the connected component_
 
-  ![density](media/fan-network7.png "density")
+  ![density](../media/fan-network7.png "density")
 
   _Approaching from the other side, as we move toward the center of the network we begin noticing "superstar reviewers" who contribute by reviewing a large number of stories._
 
-  ![the center](media/fan-network8.png "the center")
+  ![the center](../media/fan-network8.png "the center")
 
   _The closer we get to the center, the more we notice the stories and users that are most central to the network. The overlapping connections begin to make it difficult to distinguish how many conections exist._
 
-  ![the network](media/fan-network9.png "the network")
+  ![the network](../media/fan-network9.png "the network")
 
   _Perhaps it's best to take a step back and view the whole picture: 6520 stories in 15 languages written over the course of twelve years. Totalling to a little over 30,000 chapters and millions of words_
 
