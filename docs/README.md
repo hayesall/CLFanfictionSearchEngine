@@ -101,7 +101,7 @@ For the purpose of this example, I will not directly compare the results to thos
 
 ##### Algorithm Design:
 
-  ![A subsection of how this graph may look](../media/directed-fanfiction-graph.jpg "graph subsection")
+  ![A subsection of how this graph may look](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/directed-fanfiction-graph.jpg "graph subsection")
 
   _Blue [S] nodes represent stories, Violet [U] nodes represent users. Directed arrows are the edges between the nodes._
 
@@ -123,39 +123,39 @@ The assumption is that the larger role a user plays in the associated community 
 
 A realized version of the network described above. Similar to the previous section, blue nodes represent stories, violet nodes represent users.
 
-  ![doubles](../media/fan-network5.png "doubles")
+  ![doubles](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network5.png)
 
   _Single Edges are reviews, Double edges show a user wrote a story_
 
-  ![lonely nodes](../media/fan-network3.png "lonely nodes")
+  ![lonely nodes](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network3.png "lonely nodes")
 
   _Triple edges imply a user wrote and reviewed their own story._
 
-  ![Pinwheels](../media/fan-network1.png "pinwheels")
+  ![Pinwheels](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network1.png "pinwheels")
 
   _Users tend to group around stories, though some stories receive only a small amount of attention._
 
-  ![all pinwheels](../media/fan-network2.png "all pinwheels")
+  ![all pinwheels](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network2.png "all pinwheels")
 
   _There are plenty of stories that fit this category._
 
-  ![super writers](../media/fan-network4.png "super writers")
+  ![super writers](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network4.png "super writers")
 
   _Occasionally there are writers near the peripherals of the network that write a lot of stories, but their stories do not receive much attention._
 
-  ![sides of the network](../media/fan-network6.png "sides of the network")
+  ![sides of the network](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network6.png "sides of the network")
 
   _But the majority of the network wraps into the connected component_
 
-  ![density](../media/fan-network7.png "density")
+  ![density](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network7.png "density")
 
   _Approaching from the other side, as we move toward the center of the network we begin noticing "superstar reviewers" who contribute by reviewing a large number of stories._
 
-  ![the center](../media/fan-network8.png "the center")
+  ![the center](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network8.png "the center")
 
   _The closer we get to the center, the more we notice the stories and users that are most central to the network. The overlapping connections begin to make it difficult to distinguish how many conections exist._
 
-  ![the network](../media/fan-network9.png "the network")
+  ![the network](https://raw.githubusercontent.com/batflyer/CLFanfictionSearchEngine/master/media/fan-network9.png "the network")
 
   _Perhaps it's best to take a step back and view the whole picture: 6520 stories in 15 languages written over the course of twelve years. Totalling to a little over 30,000 chapters and millions of words_
 
@@ -203,7 +203,7 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
 1. The first step was to collect story-ids. Reverse-engineering how FanFiction.Net stored their stories was fairly straightforward, so I ran a quick bash script to search for stories on the 261 pages I knew would contain the information I wanted. For each, I collected reference links in the form of a unique number identifier for the 6520 stories. For quality evaluation I also dumped the web address into the "sids.txt" file, but these could be removed later with `grep -v "http"`.
 
-   "scrape_story_ids.sh" [View Code](scrape_story_ids.sh)
+   "scrape_story_ids.sh" [View Code](https://github.com/batflyer/CLFanfictionSearchEngine/blob/master/scrape_story_ids.sh)
    ```bash
    BASE="https://www.fanfiction.net/cartoon/Code-Lyoko/?&str=1&r=103&p="
    for i in {1..261}; do
@@ -216,8 +216,8 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
 2. I rewrote portions of some scripts I found on GitHub for scraping FanFiction pages, appropriately named: ["Fanfiction Scraper"](https://github.com/smilli/fanfiction). The project is maintained by [Smitha Milli](http://smithamilli.com/), an Electrical Engineering/Computer Science student at UC Berkeley.
 
-   * (As a side note, I updated my true [web crawler for following links](crawl.py), but wrote a separate one for this project)
-   * The Scraper [View Code](scraper.py):
+   * (As a side note, I updated my true [web crawler for following links](https://github.com/batflyer/CLFanfictionSearchEngine/blob/master/crawl.py), but wrote a separate one for this project)
+   * The Scraper [View Code](https://github.com/batflyer/CLFanfictionSearchEngine/blob/master/scraper.py):
 
      ```python
      > python
@@ -230,7 +230,7 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
      * I modified Smitha's original python code to have better error checking (the program would crash if there was only one chapter) and a higher rate-limit that used Poisson noise with a 2-second median.
 
-   * Analysis/Reduction [View Code](scrape_fiction.py)
+   * Analysis/Reduction [View Code](https://github.com/batflyer/CLFanfictionSearchEngine/blob/master/scrape_fiction.py)
 
      * Smitha's updated code was imported here as a package, then in one step this script downloaded the page; stored metadata, structure, and the inverted index; then proceeded to the next story. I set the original run to only scrape the first 3000 chapters, but this involved downloading each page and review page.
      
@@ -241,7 +241,7 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
 3. Now that we have the  metadata, structure, and the inverted index: it's time to put everything together.
 
-   * PageRank [View Code](pagerank.py)
+   * PageRank [View Code](https://github.com/batflyer/CLFanfictionSearchEngine/blob/master/pagerank.py)
 
      `python pagerank.py structure.csv`
        
@@ -253,7 +253,7 @@ The method I used is a semi-supervised version of webcrawling where I scraped pa
 
      Pagerank was calculated ahead of time with the contents of structure.csv, the contents were then written to a file called pr.pickle. Since PageRank is a static score in this example, this was important to drastically increase performance time.
 
-   * Querying [View Code](search-results.cgi)
+   * Querying [View Code](https://github.com/batflyer/CLFanfictionSearchEngine/blob/master/search-results.cgi)
 
      `python retrieve2.py [word1] [word2] [word3]` or `search-results.cgi`
 
